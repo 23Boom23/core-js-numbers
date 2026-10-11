@@ -239,8 +239,13 @@ function isPrime(n) {
  *   toNumber(42, 0) => 42
  *   toNumber(new Number(42), 0) => 42
  */
-function toNumber(/* value, def */) {
-  throw new Error('Not implemented');
+function toNumber(value, def) {
+  try {
+    const number = Number(value);
+    return Number.isNaN(number) ? def : number;
+  } catch {
+    return def;
+  }
 }
 
 /**
@@ -271,8 +276,17 @@ function getCube(num) {
  *   3  => 2
  *   10 => 55
  */
-function getFibonacciNumber(/* index */) {
-  throw new Error('Not implemented');
+function getFibonacciNumber(index) {
+  if (index === 0) return 0;
+
+  let previous = 0;
+  let current = 1;
+
+  for (let i = 1; i < index; i += 1) {
+    [previous, current] = [current, previous + current];
+  }
+
+  return current;
 }
 
 /**
@@ -288,7 +302,7 @@ function getFibonacciNumber(/* index */) {
  */
 function getSumToN(n) {
   let sum = 0;
-  for (let i = 0; i <= n.toString(); i += 1) {
+  for (let i = 1; i <= n; i += 1) {
     sum += i;
   }
   return sum;
@@ -307,8 +321,10 @@ function getSumToN(n) {
  */
 function getSumOfDigits(num) {
   let sum = 0;
-  for (let i = 0; i < num.toString().length; i += 1) {
-    sum += toNumber(num.toString()[i]);
+  const digits = Math.abs(num).toString();
+
+  for (let i = 0; i < digits.length; i += 1) {
+    sum += Number(digits[i]);
   }
   return sum;
 }
@@ -567,8 +583,24 @@ function getIntegerPartNumber(number) {
  * 1, 2, 3       => 6
  * 0.1, 0.2, 0.3 => 0.6
  */
-function getSumOfNumbers(/* x1, x2, x3 */) {
-  throw new Error('Not implemented');
+function getSumOfNumbers(x1, x2, x3) {
+  const numbers = [x1, x2, x3];
+  const decimalPlaces = numbers.map((number) => {
+    const [coefficient, exponent = '0'] = number
+      .toString()
+      .toLowerCase()
+      .split('e');
+    const fractionLength = (coefficient.split('.')[1] || '').length;
+
+    return Math.max(0, fractionLength - Number(exponent));
+  });
+  const factor = 10 ** Math.max(...decimalPlaces);
+  const scaledSum = numbers.reduce(
+    (sum, number) => sum + Math.round(number * factor),
+    0
+  );
+
+  return scaledSum / factor;
 }
 
 /**
@@ -632,7 +664,7 @@ function getHypotenuse(a, b) {
  */
 function getCountOfOddNumbers(number) {
   let count = 0;
-  for (let i = 0; i <= number; i += 1) {
+  for (let i = 1; i <= Math.abs(number); i += 1) {
     if (i % 2 !== 0) {
       count += 1;
     }
